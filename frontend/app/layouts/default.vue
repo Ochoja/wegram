@@ -1,6 +1,6 @@
 <template>
-  <div class="flex min-h-screen bg-bg text-text">
-    <!-- Sidebar (hidden on mobile) -->
+  <div class="flex min-h-screen">
+    <!-- Sidebar (desktop) -->
     <Sidebar class="hidden md:block" />
 
     <!-- Main content -->
