@@ -7,8 +7,3 @@
     <Dock class="md:hidden" />
   </div>
 </template>
-
-<script setup>
-import Sidebar from '@/components/Sidebar.vue';
-import Dock from '@/components/Dock.vue';
-</script>
