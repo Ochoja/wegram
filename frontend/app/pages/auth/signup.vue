@@ -1,7 +1,7 @@
 <template>
-  <div class="flex flex-col items-center justify-center h-screen">
+  <div class="w-80">
     <h1 class="text-2xl font-bold mb-6">Sign Up</h1>
-    <form @submit.prevent="submit" class="space-y-4 w-72">
+    <form @submit.prevent="submit" class="space-y-4">
       <input
         v-model="name"
         type="text"
@@ -31,15 +31,17 @@
 </template>
 
 <script setup>
-import { useAuthStore } from '@/stores/auth';
+definePageMeta({
+  layout: 'auth',
+});
 
+import { useAuthStore } from '@/stores/auth';
 const name = ref('');
 const email = ref('');
 const password = ref('');
 const auth = useAuthStore();
 
 function submit() {
-  // Fake signup, replace with backend later
   auth.login('fake-jwt-token', { id: Date.now(), name });
   navigateTo('/');
 }
