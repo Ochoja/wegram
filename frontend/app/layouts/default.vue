@@ -1,10 +1,10 @@
 <template>
-  <div class="flex min-h-screen">
+  <div class="flex">
     <!-- Sidebar (desktop) -->
     <sidebar class="hidden md:block" />
 
     <!-- Main content -->
-    <main class="flex-1 p-4">
+    <main class="flex-1">
       <slot />
     </main>
 

@@ -1,5 +1,5 @@
 <template>
-  <aside class="w-[300px] border-r border-[#35358f] p-4 space-y-4">
+  <aside class="w-[300px] h-screen border-r border-[#35358f] px-4 py-8 space-y-4 border">
     <div class="logo">
       <p class="lg:text-4xl md:text-3xl text-2xl font-[righteous] font-semibold">WeGram</p>
     </div>
