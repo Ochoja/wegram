@@ -1,4 +1,12 @@
 <script setup lang="ts">
+import { useAuthStore } from '#imports'
+
+const auth = useAuthStore()
+
+onBeforeMount(async () => {
+  await auth.getUser()
+})
+
 </script>
 
 <template>

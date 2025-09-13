@@ -5,15 +5,38 @@ import { useRuntimeConfig } from '#app';
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     token: null as string | null,
-    user: null as { id: string; name: string, email: string, isAuthenticated: boolean, isLogedIn: boolean } | null,
+    user: null as { id: string; avatar?: string, name: string, email: string, isAuthenticated: boolean, isLogedIn: boolean } | null,
     supabaseUrl: "" as string,
     supabaseKey: "" as string,
+    accessToken: "" as string,
+    refreshToken: "" as string,
   }),
   actions: {
     intialize() {
       const config = useRuntimeConfig();
       this.supabaseKey = config.public.publishableKey;
       this.supabaseUrl = config.public.supabaseUrl;
+    },
+    async setSession( accessToken: string, refreshToken: string ) {
+      const supabase = createClient(this.supabaseUrl, this.supabaseKey);
+      const { data, error } = await supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      });
+      if (error) {
+        console.error('Error setting session:', error);
+        return false;
+      }
+      this.user = {
+        name: data.user?.user_metadata.name,
+        id: data.user?.id as string,
+        email: data.user?.email as string,
+        isAuthenticated: data.user?.aud === "authenticated" ? true : false,
+        isLogedIn: true
+      }
+      this.accessToken = accessToken;
+      this.refreshToken = refreshToken;
+      return data;
     },
     async login(email: string, password: string) {
       const supabase = createClient(this.supabaseUrl, this.supabaseKey)
@@ -65,17 +88,31 @@ export const useAuthStore = defineStore('auth', {
     },
     async signInWithTwitter(): Promise<any> {
       const supabase = createClient(this.supabaseUrl, this.supabaseKey)
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: 'twitter',
       })
-      console.log(data);
-      console.log(error);
+
+      if(error) {
+        const message = error instanceof Error ? error.message : String(error)
+        throw Error (message)
+      }
     },
-    async codeForSession(code: string) {
+    async getUser () {
       const supabase = createClient(this.supabaseUrl, this.supabaseKey)
-      const {error, data} = await supabase.auth.exchangeCodeForSession(code);
+      const {data, error} = await supabase.auth.getUser();
+      console.log(data)
+      if(data && data.user) {
+        const {user} = data
+        this.user = {
+          id: user.id,
+          email: user.email as string,
+          isAuthenticated: user.aud === "authenticated" ? true : false,
+          isLogedIn: true,
+          name: user.user_metadata.name,
+          avatar: user.user_metadata.avatar_url || "", 
+        }
+      }
       console.log(error)
-      console.log(data);
     },
     logout() {
       this.token = null;
