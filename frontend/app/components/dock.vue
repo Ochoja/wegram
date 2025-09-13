@@ -5,17 +5,19 @@
       v-for="item in items"
       :key="item.to"
       :to="item.to"
-      class="text-xl">
-      {{ item.icon }}
+      class="flex flex-col items-center">
+      <div><Icon :name="item.icon" /></div>
+      <div>{{ item.label }}</div>
     </NuxtLink>
   </nav>
 </template>
 
 <script setup>
 const items = [
-  { to: '/', icon: '🏠' },
-  { to: '/explore', icon: '🔍' },
-  { to: '/chat', icon: '💬' },
-  { to: '/wallet', icon: '👛' },
+  { to: '/', label: 'Home', icon: 'ion:home-outline' },
+  { to: '/explore', label: 'Search', icon: 'ion:search' },
+  { to: '/chat', label: 'Messages', icon: 'ion:chatbox-ellipses-outline' },
+  { to: '/games', label: 'Games', icon: 'ion:ios-game-controller-a-outline' },
+  { to: '/wallet', label: 'Wallet', icon: 'ion:wallet-outline' },
 ];
 </script>
