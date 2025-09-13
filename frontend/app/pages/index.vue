@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import FeedCard from '@/components/FeedCard.vue';
+import FeedCard from '~/components/feed-card.vue';
 
 const posts = [
   { id: 1, author: 'Alice', content: 'Just joined WEGRAM 🎉' },
