@@ -16,4 +16,11 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@pinia/nuxt',
   ],
+  runtimeConfig: {
+    public: {
+      supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL,
+      supabaseKey: process.env.NUXT_PUBLIC_SUPABASE_KEY,
+      publishableKey: process.env.NUXT_PUBLIC_PUBLISHABLE_KEY,
+    },
+  },
 });

@@ -20,8 +20,10 @@
       </div>
 
       <div class="login-button">
-        <button type="submit" class="w-full py-3 rounded-full bg-[#11119D] text-white">
-          Login
+        <button type="submit"
+          class="w-full py-3 h-[50px] flex items-center justify-center rounded-full bg-[#11119D] text-white">
+          <Icon v-if="loading" name="ion:load-c" class="animate-spin text-[20px]" />
+          <span v-else>Login</span>
         </button>
       </div>
     </form>
@@ -34,13 +36,20 @@
 
       <p class="text-center my-7">OR</p>
 
-      <button type="button" aria-label="Auth with x(formerly twitter)" class="flex items-center justify-center gap-2 rounded-full py-3 w-full bg-[#11119D]">Continue with <Icon name="ion:logo-x" /></button>
+      <button @click="signInWithTwitter" type="button" aria-label="Auth with x(formerly twitter)"
+        class="flex items-center justify-center gap-2 rounded-full py-3 w-full bg-[#11119D]">Continue with
+        <Icon name="ion:logo-x" />
+      </button>
     </div>
   </main>
 </template>
 
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth';
+import { useRoute, useRouter } from 'vue-router';
+
+const route = useRoute();
+const router = useRouter();
 
 definePageMeta({
   layout: 'auth',
@@ -49,10 +58,24 @@ definePageMeta({
 const email = ref('');
 const password = ref('');
 const showPassword = ref(false);
+const loading = ref(false);
 const auth = useAuthStore();
 
-function submit() {
-  auth.login('fake-jwt-token', { id: 1, name: 'Demo User' });
-  navigateTo('/');
+const { signInWithTwitter } = auth
+
+async function submit() {
+  loading.value = true;
+  try {
+    const { user } = await auth.login(email.value, password.value);
+    if (user) {
+      navigateTo('/');
+    }
+    loading.value = false;
+  } catch (err) {
+    console.log(err)
+    const message = err instanceof Error ? err.message : String(err)
+    alert(message);
+    loading.value = false;
+  }
 }
 </script>

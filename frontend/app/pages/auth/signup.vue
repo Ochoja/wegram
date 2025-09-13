@@ -26,8 +26,10 @@
       </div>
 
       <div class="login-button">
-        <button type="submit" class="w-full py-3 rounded-full bg-[#11119D] text-white">
-          Signup
+        <button type="submit"
+          class="w-full py-3 h-[50px] flex items-center justify-center rounded-full bg-[#11119D] text-white">
+          <Icon v-if="loading" name="ion:load-c" class="animate-spin text-[20px]" />
+          <span v-else>Signup</span>
         </button>
       </div>
     </form>
@@ -54,13 +56,23 @@ definePageMeta({
 });
 
 import { useAuthStore } from '@/stores/auth';
+import { ref } from 'vue';
 const name = ref('');
 const email = ref('');
 const password = ref('');
 const auth = useAuthStore();
+const showPassword = ref(false);
+const loading = ref(false);
 
-function submit() {
-  auth.login('fake-jwt-token', { id: Date.now(), name });
-  navigateTo('/');
+async function submit() {
+  loading.value = true;
+  try {
+    await auth.signup(email.value, name.value, password.value);
+    loading.value = false
+    // navigateTo('/');
+  } catch (error) {
+    console.log(error)
+    loading.value = false
+  }
 }
 </script>
