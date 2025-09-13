@@ -42,7 +42,7 @@ const items = [
   {
     to: '/livestream',
     label: 'Livestream',
-    icon: 'ion:ios-game-controller-a-outline',
+    icon: 'fluent:live-24-regular',
   },
 ];
 
