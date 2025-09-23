@@ -4,6 +4,7 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import session from 'express-session';
+import cookieParser from 'cookie-parser';
 import postsRouter from './routes/posts.router.js';
 import passport from './configs/passport.js';
 import authRouter from './routes/auth.router.js';
@@ -15,13 +16,14 @@ const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/mydatabase';
 
 app.use(cors());
+app.use(cookieParser());
 app.use(passport.initialize());
 
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: process.env.NODE_ENV === 'production' }
+  cookie: { secure: process.env.NODE_ENV === 'prod' }
 }));
 
 app.use(bodyParser.json());
