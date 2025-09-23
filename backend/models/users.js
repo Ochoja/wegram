@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const UserSchema = new Schema({
-    oauthProvider: { type: String, enum: ['x'], default : 'x' },
+    oauthProvider: { type: String, enum: ['twitter'], default : 'twitter' },
     oauthId: { type: String, index: true, sparse: true },
     displayName: { type: String, required: true },
     handle: { type: String, required: true, unique: true, index: true},

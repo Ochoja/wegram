@@ -20,10 +20,10 @@ passport.use(new TwitterStrategy(
             console.log("Refresh Token:\n\t", refreshToken);
             console.log("Twitter profile\n\t:", profile);
             // find or create a user in our database
-            let user = await User.findOne({ oauthProvider: 'x', oauthId: profile.id });
+            let user = await User.findOne({ oauthProvider: 'twitter', oauthId: profile.id });
             if (!user) {
                 user = new User({
-                    oauthProvider: 'x',
+                    oauthProvider: 'twitter',
                     oauthId: profile.id,
                     displayName: profile.displayName || profile.username,
                     handle: profile.username,
@@ -39,5 +39,19 @@ passport.use(new TwitterStrategy(
     }
 )
 )
+
+// Serialize and deserialize user for session management
+passport.serializeUser((user, done) => {
+    done(null, user._id);
+});
+
+passport.deserializeUser(async (id, done) => {
+    try {
+        const user = await User.findById(id);
+        done(null, user);
+    } catch (error) {
+        done(error);
+    }
+});
 
 export default passport;
