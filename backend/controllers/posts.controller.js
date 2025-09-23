@@ -9,7 +9,7 @@ export class UserPostController {
     static async createPost(req, res) {
         try {
             const authorId = req.user._id;
-            const { content, media = [] } = req.body;
+            const { content, media = [] } = req.body || {};
 
             if (!content && (!Array.isArray(media) || media.length === 0)) {
                 return sendResponse(res, 400, 'Post must have content or media');
@@ -32,7 +32,7 @@ export class UserPostController {
         try {
             const authorId = req.user._id;
             const { id } = req.params;
-            const { content, media } = req.body;
+            const { content, media } = req.body || {};
 
             const _id = toObjectId(id);
             if (!_id) {
@@ -110,7 +110,7 @@ export class PostController {
                 isReposted: currentUserId ? post.reposts.includes(currentUserId.toString()) : false
             }));
 
-            return sendResponse(res, 200, 'Feed fetched successfully', { postsWithStatus, page, limit, total });
+            return sendResponse(res, 200, 'Feed fetched successfully', { posts: postsWithStatus, page, limit, total });
         }
         catch (error) {
             console.error("Error while fetching feed", error);
