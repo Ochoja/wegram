@@ -96,7 +96,7 @@ export class PostController {
                 .sort(sortBy)
                 .skip((page - 1) * limit)
                 .limit(limit)
-                .populate('author', 'username handle avatarUrl')
+                .populate('author', 'displayName handle avatarUrl')
                 .populate('media', 'url')
                 .lean();
             
@@ -126,7 +126,7 @@ export class PostController {
                 return sendResponse(res, 400, 'Invalid post ID');
             }
 
-            const post = await Post.findById(_id).populate('author', 'username handle avatar').lean();
+            const post = await Post.findById(_id).populate('author', 'displayName handle avatar').lean();
             if (!post) return sendResponse(res, 404, 'Post not found');
 
             // Add isLiked property manually for lean objects
@@ -157,7 +157,7 @@ export class PostController {
                 .sort({ createdAt: -1 })
                 .skip((page - 1) * limit)
                 .limit(limit)
-                .populate('author', 'username handle avatarUrl')
+                .populate('author', 'displayName handle avatarUrl')
                 .populate('media', 'url')
                 .lean();
             
