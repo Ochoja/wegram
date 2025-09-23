@@ -3,9 +3,9 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const UserSchema = new Schema({
-    oauthProvider: { type: String, enum: ['x'], default : 'x'},
-    oauthId: { type: String, index: true, sparse: true},
-    username: { type: String, required: true, unique: true, index: true},
+    oauthProvider: { type: String, enum: ['x'], default : 'x' },
+    oauthId: { type: String, index: true, sparse: true },
+    displayName: { type: String, required: true },
     handle: { type: String, required: true, unique: true, index: true},
     email: { type: String, unique: true, sparse: true },
     avatarUrl: { type: String },
