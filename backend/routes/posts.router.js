@@ -1,23 +1,24 @@
 import { Router } from 'express';
 import { UserPostController, PostController, PostInteractionController } from '../controllers/posts.controller';
+import authenticate from '../middleware/authenticate';
 
 const router = Router();
 
 
 router.get('/feed', PostController.getFeed);
-router.get('/posts/:id', PostController.getPostById);
-router.get('/posts/:userId', PostController.getUserPosts);
+router.get('/:id', PostController.getPostById);
+router.get('/:userId', PostController.getUserPosts);
 
 // interaction routes - like, repost, bookmark
-// all require authentication middleware to set req.user
-router.post('/posts/:id/like', PostInteractionController.likeOrUnlikePost);
-router.post('/posts/:id/repost', PostInteractionController.repostOrUndoRepost);
-router.post('/posts/:id/bookmark', PostInteractionController.bookmarkOrRemoveBookmark);
+// all require authentication
+router.post('/:id/like', authenticate, PostInteractionController.likeOrUnlikePost);
+router.post('/:id/repost', authenticate, PostInteractionController.repostOrUndoRepost);
+router.post('/:id/bookmark', authenticate, PostInteractionController.bookmarkOrRemoveBookmark);
 
-// requires authentication middleware to set req.user
+// requires authentication
 // user post management routes
-router.post('/posts', UserPostController.createPost);
-router.put('/posts/:id', UserPostController.updatePost);
-router.delete('/posts/:id', UserPostController.deletePost);
+router.post('/', authenticate, UserPostController.createPost);
+router.put('/:id', authenticate, UserPostController.updatePost);
+router.delete('/:id', authenticate, UserPostController.deletePost);
 
 export default router;

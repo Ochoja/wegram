@@ -8,6 +8,7 @@ import cookieParser from 'cookie-parser';
 import postsRouter from './routes/posts.router.js';
 import passport from './configs/passport.js';
 import authRouter from './routes/auth.router.js';
+import notFoundHandler from './middleware/notFound.js';
 
 dotenv.config();
 
@@ -34,6 +35,9 @@ app.use(express.json({ limit: '10mb' }));
 // routes
 app.use('/api/v1/posts', postsRouter);
 app.use('/api/auth', authRouter);
+
+// 404 handler
+app.use(notFoundHandler);
 
 mongoose.set('strictQuery', false);
 mongoose.connect(MONGODB_URI)

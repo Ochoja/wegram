@@ -16,9 +16,6 @@ passport.use(new TwitterStrategy(
     // the verify callback
     async (accessToken, refreshToken, profile, done) => {
         try {
-            console.log("Access Token:\n\t", accessToken);
-            console.log("Refresh Token:\n\t", refreshToken);
-            console.log("Twitter profile\n\t:", profile);
             // find or create a user in our database
             let user = await User.findOne({ oauthProvider: 'twitter', oauthId: profile.id });
             if (!user) {
