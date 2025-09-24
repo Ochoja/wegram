@@ -5,16 +5,27 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 import postsRouter from './routes/posts.router.js';
 import messagesRouter from './routes/messages.router.js';
 import passport from './configs/passport.js';
 import authRouter from './routes/auth.router.js';
 import notFoundHandler from './middleware/notFound.js';
 import authenticate from './middleware/authenticate.js';
+import { initializeSocket } from './services/socket.js';
 
 dotenv.config();
 
 const app = express();
+const server = createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    credentials: true
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/mydatabase';
 
@@ -38,6 +49,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json({ limit: '10mb' }));
 app.use(authenticate);
 
+// Initialize Socket.IO
+initializeSocket(io);
+
+// Make io available to routes
+app.set('io', io);
+
 // routes
 app.use('/api/v1/posts', postsRouter);
 app.use('/api/v1/messages', messagesRouter);
@@ -56,6 +73,7 @@ mongoose.connect(MONGODB_URI)
     process.exit(1);
   });
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+  console.log('WebSocket server initialized');
 });

@@ -3,6 +3,7 @@ import Conversation from '../models/conversations.js';
 import User from '../models/users.js';
 import { toObjectId, validateObjectId, sanitizeInput } from '../services/utils.js';
 import sendResponse from '../services/response.js';
+import { emitToConversation, emitToUser } from '../services/socket.js';
 
 export class MessageController {
     // Get all conversations for a user
@@ -173,6 +174,34 @@ export class MessageController {
             // Populate sender info for response
             await message.populate('sender', 'displayName handle avatarUrl');
 
+            // Emit real-time message to conversation participants
+            const io = req.app.get('io');
+            if (io) {
+                // Emit to conversation room
+                emitToConversation(io, conversationId, 'new_message', {
+                    message: {
+                        _id: message._id,
+                        sender: message.sender,
+                        content: message.content,
+                        messageType: message.messageType,
+                        media: message.media,
+                        conversationId: message.conversationId,
+                        createdAt: message.createdAt,
+                        isRead: false
+                    },
+                    conversationId
+                }, senderId.toString());
+
+                // Emit notification to recipient if they're not in the conversation room
+                emitToUser(io, recipientObjectId.toString(), 'message_notification', {
+                    senderId: senderId.toString(),
+                    senderName: socket.user?.displayName || 'Someone',
+                    conversationId,
+                    preview: content.substring(0, 50) + (content.length > 50 ? '...' : ''),
+                    timestamp: new Date()
+                });
+            }
+
             return sendResponse(res, 201, 'Message sent successfully', message);
         } catch (error) {
             console.error('Error sending message:', error);
@@ -201,6 +230,16 @@ export class MessageController {
             }
 
             await message.softDelete();
+
+            // Emit real-time message deletion
+            const io = req.app.get('io');
+            if (io) {
+                emitToConversation(io, message.conversationId, 'message_deleted', {
+                    messageId: message._id,
+                    deletedBy: userId.toString(),
+                    deletedAt: new Date()
+                });
+            }
 
             return sendResponse(res, 200, 'Message deleted successfully');
         } catch (error) {
@@ -240,6 +279,16 @@ export class MessageController {
 
             if (conversation) {
                 await conversation.markAsRead(userId);
+            }
+
+            // Emit read receipt to conversation
+            const io = req.app.get('io');
+            if (io) {
+                emitToConversation(io, conversationId, 'messages_read', {
+                    readBy: userId.toString(),
+                    conversationId,
+                    readAt: new Date()
+                }, userId.toString());
             }
 
             return sendResponse(res, 200, 'Messages marked as read');

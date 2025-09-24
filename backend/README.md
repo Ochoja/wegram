@@ -256,9 +256,47 @@ PORT=3000
 - ✅ Twitter OAuth authentication
 - ✅ Post creation, editing, and deletion
 - ✅ Social interactions (likes, reposts, bookmarks)
-- ✅ Real-time messaging system
+- ✅ Real-time messaging system with WebSockets
 - ✅ Conversation management
 - ✅ User search for messaging
 - ✅ Pagination for all list endpoints
 - ✅ Input validation and sanitization
 - ✅ Error handling and logging
+- ✅ Real-time message delivery
+- ✅ Typing indicators
+- ✅ Read receipts
+- ✅ Online/offline status
+- ✅ Message notifications
+
+## WebSocket Events
+
+### Client to Server Events:
+- `join_conversation` - Join a conversation room
+- `leave_conversation` - Leave a conversation room  
+- `typing_start` - Start typing indicator
+- `typing_stop` - Stop typing indicator
+- `message_read` - Mark message as read
+- `status_update` - Update user status
+
+### Server to Client Events:
+- `new_message` - New message received
+- `message_deleted` - Message was deleted
+- `messages_read` - Messages marked as read
+- `message_notification` - New message notification
+- `user_typing` - User started typing
+- `user_stopped_typing` - User stopped typing
+- `message_read_receipt` - Message read confirmation
+- `user_status_changed` - User status updated
+- `user_offline` - User went offline
+
+## WebSocket Authentication
+
+WebSocket connections require JWT authentication. Pass the token in the auth object:
+
+```javascript
+const socket = io('http://localhost:3000', {
+  auth: {
+    token: 'your_jwt_token_here'
+  }
+});
+```
