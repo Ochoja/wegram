@@ -1,4 +1,4 @@
-import sendResponse from "../services/response";
+import sendResponse from "../services/response.js";
 
 //page not found handler
 export default function notFoundHandler(req, res) {

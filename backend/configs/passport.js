@@ -1,6 +1,6 @@
 import passport from "passport";
 import dotenv from 'dotenv';
-import User from "../models/users";
+import User from "../models/users.js";
 
 import { Strategy as TwitterStrategy } from "@superfaceai/passport-twitter-oauth2";
 
@@ -26,7 +26,7 @@ passport.use(new TwitterStrategy(
                     handle: profile.username,
                     avatarUrl: profile._json.profile_image_url,
                     bio: profile._json.description
-                })
+                });
                 await user.save();
             }
             return done(null, user);
@@ -34,8 +34,7 @@ passport.use(new TwitterStrategy(
             return done(error);
         }
     }
-)
-)
+));
 
 // Serialize and deserialize user for session management
 passport.serializeUser((user, done) => {

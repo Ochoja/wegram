@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
-import User from "../models/users";
+import User from "../models/users.js";
 import dotenv from 'dotenv';
-import sendResponse from "../services/response"
+import sendResponse from "../services/response.js";
 
 dotenv.config();
 
@@ -17,7 +17,7 @@ export default function authenticate(req, res, next) {
     if (authHeader && authHeader.startsWith('Bearer ')) {
         token = authHeader.split(' ')[1];
     } else {
-        token = req.cookies?.token;
+        token = req.cookies?.jwt;
     }
     
     if (!token) {
@@ -39,7 +39,7 @@ export default function authenticate(req, res, next) {
             console.error("Error in authentication middleware:", error);
             return sendResponse(res, 500, "Internal server error");
         }
-    })
+    });
 }
 
 export function authRequired(req, res, next) {

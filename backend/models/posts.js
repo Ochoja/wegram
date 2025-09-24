@@ -52,7 +52,7 @@ PostSchema.methods.addorRemoveRepost = async function(userId) {
     }
 };
 
-PostSchema.post('remove', async function(doc) {
+PostSchema.post('deleteOne', { document: true, query: false }, async function(doc) {
     // remove post from all users bookmarks on delete
     const User = mongoose.model('User');
     await User.updateMany(
@@ -61,9 +61,8 @@ PostSchema.post('remove', async function(doc) {
     );
     // remove comments associated with this post
     const Comment = mongoose.model('Comment');
-    await Comment.updateMany(
+    await Comment.deleteMany(
         { post: doc._id },
-        { $pull: { post: doc._id } }
     );
 });
 

@@ -1,13 +1,13 @@
 import { Router } from 'express';
-import { UserPostController, PostController, PostInteractionController } from '../controllers/posts.controller';
-import { authRequired } from '../middleware/authenticate';
+import { UserPostController, PostController, PostInteractionController } from '../controllers/posts.controller.js';
+import { authRequired } from '../middleware/authenticate.js';
 
 const router = Router();
 
 
 router.get('/feed', PostController.getFeed);
 router.get('/:id', PostController.getPostById);
-router.get('/:userId', PostController.getUserPosts);
+router.get('/user/:userId', PostController.getUserPosts);
 
 // interaction routes - like, repost, bookmark
 // all require authentication

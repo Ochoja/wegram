@@ -1,6 +1,6 @@
 # Wegram Backend API
 
-A social media backend API for Wegram - a Twitter-like platform that supports user authentication via OAuth, post creation and management, social interactions (likes, reposts, bookmarks), and content discovery through feeds.
+A social media backend API for Wegram - a Twitter-like platform that supports user authentication via OAuth, post creation and management, social interactions (likes, reposts, bookmarks), real-time messaging, and content discovery through feeds.
 
 ## Available Endpoints
 
@@ -119,6 +119,66 @@ A social media backend API for Wegram - a Twitter-like platform that supports us
 
 ---
 
+### Messages Management (Authentication Required)
+
+#### `GET /api/v1/messages/conversations`
+**Summary:** Get all conversations for authenticated user  
+**Authentication:** Required (JWT token)  
+**Description:** Retrieves a paginated list of all conversations for the authenticated user, including participant information, last message, and unread counts.
+
+**Query Parameters:**
+- `page` (optional): Page number for pagination (min: 1, default: 1)
+- `limit` (optional): Conversations per page (max: 50, default: 20)
+
+#### `GET /api/v1/messages/conversations/{conversationId}/messages`
+**Summary:** Get messages in a conversation  
+**Authentication:** Required (JWT token + conversation access)  
+**Description:** Retrieves messages from a specific conversation. Automatically marks messages as read for the authenticated user.
+
+**Path Parameters:**
+- `conversationId` (required): Unique conversation identifier
+
+**Query Parameters:**
+- `page` (optional): Page number for pagination (min: 1, default: 1)
+- `limit` (optional): Messages per page (max: 100, default: 50)
+
+#### `POST /api/v1/messages/send`
+**Summary:** Send a new message  
+**Authentication:** Required (JWT token)  
+**Description:** Sends a message to another user. Creates a new conversation if one doesn't exist between the users.
+
+**Request Body:**
+- `recipientId` (required): User ID of the message recipient
+- `content` (required): Message content (max: 1000 characters)
+- `messageType` (optional): Type of message - `text`, `image`, or `file` (default: text)
+- `media` (optional): Media attachment object with URL, MIME type, and size
+
+#### `DELETE /api/v1/messages/{messageId}`
+**Summary:** Delete a message  
+**Authentication:** Required (JWT token + message ownership)  
+**Description:** Soft deletes a message. Only the sender can delete their own messages.
+
+**Path Parameters:**
+- `messageId` (required): Unique message identifier
+
+#### `PUT /api/v1/messages/conversations/{conversationId}/read`
+**Summary:** Mark messages as read  
+**Authentication:** Required (JWT token + conversation access)  
+**Description:** Marks all unread messages in a conversation as read for the authenticated user.
+
+**Path Parameters:**
+- `conversationId` (required): Unique conversation identifier
+
+#### `GET /api/v1/messages/users/search`
+**Summary:** Search users for messaging  
+**Authentication:** Required (JWT token)  
+**Description:** Search for users by display name or handle to start new conversations.
+
+**Query Parameters:**
+- `query` (required): Search term (min: 2 characters)
+
+---
+
 ## Authentication
 
 The API uses JWT-based authentication with Twitter OAuth for user registration and login. Protected endpoints require either:
@@ -160,7 +220,45 @@ For detailed API documentation with request/response schemas, examples, and test
 ## Getting Started
 
 1. Start the development server: `npm start`
-2. Access the API at `http://localhost:3000`
+2. Access the API at `http://localhost:3000` (or your configured PORT)
 3. Use `/api/auth/twitter` to authenticate via Twitter OAuth
 4. Use the JWT token for authenticated endpoints
-5. Import `openapi.yaml` into your API testing tool for detailed documentation
+5. Set up your environment variables using `.env-example` as a template
+
+## Environment Variables
+
+Create a `.env` file based on `.env-example`:
+
+```env
+TWITTER_CLIENT_ID=your_twitter_client_id
+TWITTER_CLIENT_SECRET=your_twitter_client_secret
+BASE_URL=http://localhost:3000
+TWITTER_CALLBACK_URL=http://localhost:3000/api/auth/twitter/callback
+JWT_SECRET=your_jwt_secret_key
+FRONTEND_LOGIN_ENDPOINT=http://localhost:3000/auth/login
+FRONTEND_URL=http://localhost:3000
+SESSION_SECRET=your_session_secret
+NODE_ENV=dev
+MONGODB_URI=mongodb://localhost:27017/wegram
+PORT=3000
+```
+
+## Database Models
+
+- **Users**: User profiles and authentication data
+- **Posts**: Social media posts with content and media
+- **Comments**: Comments on posts
+- **Messages**: Direct messages between users
+- **Conversations**: Conversation metadata and unread counts
+
+## Features
+
+- ✅ Twitter OAuth authentication
+- ✅ Post creation, editing, and deletion
+- ✅ Social interactions (likes, reposts, bookmarks)
+- ✅ Real-time messaging system
+- ✅ Conversation management
+- ✅ User search for messaging
+- ✅ Pagination for all list endpoints
+- ✅ Input validation and sanitization
+- ✅ Error handling and logging

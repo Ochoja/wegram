@@ -1,7 +1,7 @@
-import Post from "../models/posts";
-import User from "../models/users";
-import { toObjectId } from "../services/utils";
-import sendResponse from "../services/response";
+import Post from "../models/posts.js";
+import User from "../models/users.js";
+import { toObjectId } from "../services/utils.js";
+import sendResponse from "../services/response.js";
 
 
 export class UserPostController {
@@ -171,7 +171,7 @@ export class PostController {
                 isReposted: currentUserId ? post.reposts.includes(currentUserId.toString()) : false
             }));
 
-            return sendResponse(res, 200, 'User posts fetched successfully', { postsWithStatus, page, limit, total });
+            return sendResponse(res, 200, 'User posts fetched successfully', { posts: postsWithStatus, page, limit, total });
         }
         catch (error) {
             console.error("Error while fetching user posts", error);

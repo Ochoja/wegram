@@ -29,7 +29,7 @@ CommentSchema.post('save', async function(doc) {
     const Post = mongoose.model('Post');
     await Post.findByIdAndUpdate(doc.post, { $inc: { commentsCount: 1 } });
 });
-CommentSchema.post('remove', async function(doc) {
+CommentSchema.post('deleteOne', { document: true, query: false }, async function(doc) {
     // Decrement commentsCount on the associated post
     const Post = mongoose.model('Post');
     await Post.findByIdAndUpdate(doc.post, { $inc: { commentsCount: -1 } });

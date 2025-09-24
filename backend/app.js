@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import postsRouter from './routes/posts.router.js';
+import messagesRouter from './routes/messages.router.js';
 import passport from './configs/passport.js';
 import authRouter from './routes/auth.router.js';
 import notFoundHandler from './middleware/notFound.js';
@@ -17,7 +18,10 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/mydatabase';
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true
+}));
 app.use(cookieParser());
 app.use(passport.initialize());
 
@@ -36,6 +40,7 @@ app.use(authenticate);
 
 // routes
 app.use('/api/v1/posts', postsRouter);
+app.use('/api/v1/messages', messagesRouter);
 app.use('/api/auth', authRouter);
 
 // 404 handler
