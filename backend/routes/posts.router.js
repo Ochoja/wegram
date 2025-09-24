@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { UserPostController, PostController, PostInteractionController } from '../controllers/posts.controller';
-import authenticate from '../middleware/authenticate';
+import { authRequired } from '../middleware/authenticate';
 
 const router = Router();
 
@@ -11,14 +11,14 @@ router.get('/:userId', PostController.getUserPosts);
 
 // interaction routes - like, repost, bookmark
 // all require authentication
-router.post('/:id/like', authenticate, PostInteractionController.likeOrUnlikePost);
-router.post('/:id/repost', authenticate, PostInteractionController.repostOrUndoRepost);
-router.post('/:id/bookmark', authenticate, PostInteractionController.bookmarkOrRemoveBookmark);
+router.post('/:id/like', authRequired, PostInteractionController.likeOrUnlikePost);
+router.post('/:id/repost', authRequired, PostInteractionController.repostOrUndoRepost);
+router.post('/:id/bookmark', authRequired, PostInteractionController.bookmarkOrRemoveBookmark);
 
 // requires authentication
 // user post management routes
-router.post('/', authenticate, UserPostController.createPost);
-router.put('/:id', authenticate, UserPostController.updatePost);
-router.delete('/:id', authenticate, UserPostController.deletePost);
+router.post('/', authRequired, UserPostController.createPost);
+router.put('/:id', authRequired, UserPostController.updatePost);
+router.delete('/:id', authRequired, UserPostController.deletePost);
 
 export default router;

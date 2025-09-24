@@ -21,16 +21,17 @@ export default function authenticate(req, res, next) {
     }
     
     if (!token) {
-        return sendResponse(res, 401, "Authentication token missing");
+        next(); // Proceed without authentication
+        return;
     }
 
     jwt.verify(token, JWT_SECRET, async (err, payload) => {
-        if (err) return sendResponse(res, 401, "Invalid or expired token");
+        if (err) return next(); // Invalid token, proceed without authentication
 
         try {
             const user = await User.findById(payload.userId);
             if (!user) {
-                return sendResponse(res, 401, "Invalid or expired token");
+                return next(); // Invalid or expired token, proceed without authentication
             }
             req.user = user; // Attach user to request object
             next();
@@ -39,4 +40,11 @@ export default function authenticate(req, res, next) {
             return sendResponse(res, 500, "Internal server error");
         }
     })
+}
+
+export function authRequired(req, res, next) {
+    if (!req.user) {
+        return sendResponse(res, 401, "Unauthorized: Authentication required");
+    }
+    next();
 }
