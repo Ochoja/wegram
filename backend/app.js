@@ -9,6 +9,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import postsRouter from './routes/posts.router.js';
 import messagesRouter from './routes/messages.router.js';
+import gameRouter from './routes/game.router.js';
 import passport from './configs/passport.js';
 import authRouter from './routes/auth.router.js';
 import notFoundHandler from './middleware/notFound.js';
@@ -58,6 +59,7 @@ app.set('io', io);
 // routes
 app.use('/api/v1/posts', postsRouter);
 app.use('/api/v1/messages', messagesRouter);
+app.use('/api/v1/game', gameRouter);
 app.use('/api/auth', authRouter);
 
 // 404 handler
