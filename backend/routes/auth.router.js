@@ -2,7 +2,6 @@ import { Router } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from 'dotenv';
 import passport from "../configs/passport.js";
-import sendResponse from "../services/response.js";
 
 dotenv.config();
 
@@ -15,7 +14,7 @@ router.get("/twitter", passport.authenticate("twitter", {
 
 // handle callback from twitter
 router.get("/twitter/callback",
-    passport.authenticate("twitter", { failureRedirect: process.env.FRONTEND_LOGIN_ENDPOINT } ),
+    passport.authenticate("twitter", { failureRedirect: `${process.env.FRONTEND_URL}/auth/login` } ),
     async (req, res) => {
         const user = req.user;
         const token = jwt.sign(
@@ -23,13 +22,18 @@ router.get("/twitter/callback",
             process.env.JWT_SECRET,
             { expiresIn: '7d' }
         );
+        
+        // Set cookie for fallback/server-side usage
         res.cookie('jwt', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'prod',
             maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
             sameSite: process.env.NODE_ENV === 'prod' ? 'None' : 'Lax'
         });
-        sendResponse(res, 201, "User authenticated successfully", { token, user });
+        
+        // Redirect to frontend with JWT token
+        const frontendCallbackUrl = process.env.FRONTEND_LOGIN_ENDPOINT || `${process.env.FRONTEND_URL}/twitter/callback`;
+        res.redirect(`${frontendCallbackUrl}?token=${token}`);
     }
 );
 
